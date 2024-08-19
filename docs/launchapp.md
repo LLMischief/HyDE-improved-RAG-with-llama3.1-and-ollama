@@ -1,0 +1,55 @@
+
+To launch the app under test, simply write:
+```yaml
+- launchApp
+```
+To launch an arbitrary app with a given id (package name on Android, bundle id on iOS), do:
+```yaml
+- launchApp: appId
+```
+If you need to clear the app state before launching the app, specify a clearState flag
+```yaml
+- launchApp:
+    appId: "com.example.app"
+    clearState: true
+    clearKeychain: true   # optional: clear *entire* iOS keychain
+    stopApp: false # optional (true by default): stop the app before launching it
+    permissions: { all: deny } # optional: by default all permissions are allowed,
+                               # even if clearState: true is passed
+```
+If you want to test with a permission with a specific value, specify a permissions argument
+```yaml
+- launchApp:
+    permissions:
+        notifications: unset # notification permission is unset
+        android.permission.ACCESS_FINE_LOCATION: deny # Android fine location permission is denied
+```
+You can send launch arguments while launching the app for both iOS and Android. 
+Arguments allow sending String, Boolean, Double, and Integer. All other data types are by default passed as a String.
+```yaml
+- launchApp:
+    appId: "com.example.app"
+    arguments: 
+       foo: "This is a string"
+       isFooEnabled: false
+       fooValue: 3.24
+       fooInt: 3
+```
+```kotlin
+intent.extras?.getBoolean("isFooEnabled")?.let {
+    // Do something with isFooEnabled
+}
+
+intent.extras?.getString("foo")?.let {
+    // Do something with foo
+}
+```
+```swift
+if ProcessInfo.processInfo.arguments.contains("isFooEnabled") {
+    // Do something with isFooEnabled
+}
+
+// By default all the values received here would be string
+let standardDefaultsDict = UserDefaults.standard.dictionaryRepresentation()
+let foo = (standardDefaultsDict["foo"] as? String) ?? "defaultValue"
+```
